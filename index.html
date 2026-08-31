@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tables de multiplication</title>
+<style>
+  :root {
+    --ink: #1c1c1a;
+    --paper: #faf9f6;
+    --line: #dedad2;
+    --muted: #79756c;
+    --accent: #2f5233;
+    --wrong: #a13d2f;
+    --panel: #f1efe9;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+  }
+
+  h1 {
+    font-size: 21px;
+    font-weight: 600;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+
+  .sub {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0 0 24px;
+  }
+
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 24px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 10px 0;
+    text-align: center;
+    font-size: 14px;
+    color: var(--muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .tab.active {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
+    font-weight: 600;
+  }
+
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ---- Consultation view ---- */
+  .table-picker {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  .table-picker button {
+    padding: 8px 0;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--ink);
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .table-picker button.active {
+    background: var(--accent);
+    color: var(--paper);
+    border-color: var(--accent);
+  }
+
+  .table-list {
+    border-top: 1px solid var(--line);
+  }
+
+  .table-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 4px;
+    border-bottom: 1px solid var(--line);
+    font-size: 17px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .table-row span:first-child { color: var(--muted); }
+
+  /* ---- Practice view ---- */
+  .setup {
+    margin-bottom: 20px;
+  }
+
+  .setup label {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .range-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin-bottom: 18px;
+  }
+
+  .range-grid button {
+    padding: 7px 0;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--ink);
+    font-size: 13px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .range-grid button.selected {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  .start-btn {
+    width: 100%;
+    padding: 13px 0;
+    background: var(--accent);
+    color: var(--paper);
+    border: none;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .card {
+    text-align: center;
+    padding: 40px 20px 20px;
+  }
+
+  .progress {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+
+  .question {
+    font-size: 44px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 24px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .answer-input {
+    width: 140px;
+    font-size: 26px;
+    text-align: center;
+    padding: 10px 0;
+    border: none;
+    border-bottom: 2px solid var(--line);
+    background: none;
+    color: var(--ink);
+    font-family: inherit;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .answer-input:focus {
+    outline: none;
+    border-bottom-color: var(--ink);
+  }
+
+  .answer-input.correct { border-bottom-color: var(--accent); color: var(--accent); }
+  .answer-input.wrong { border-bottom-color: var(--wrong); color: var(--wrong); }
+
+  .feedback {
+    min-height: 22px;
+    font-size: 15px;
+    margin-top: 14px;
+  }
+
+  .feedback.correct { color: var(--accent); }
+  .feedback.wrong { color: var(--wrong); }
+
+  .check-btn {
+    display: block;
+    margin: 22px auto 0;
+    padding: 10px 28px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .session-summary {
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .session-summary .big {
+    font-size: 36px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .weak-list {
+    margin-top: 24px;
+    text-align: left;
+  }
+
+  .weak-list h3 {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .weak-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 4px;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .restart-btn {
+    margin-top: 26px;
+    padding: 10px 28px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Tables de multiplication</h1>
+  <p class="sub">Consultation et entraînement, sans détour.</p>
+
+  <div class="tabs">
+    <button class="tab active" data-view="consult">Consulter</button>
+    <button class="tab" data-view="practice">S'entraîner</button>
+  </div>
+
+  <!-- CONSULTATION -->
+  <div class="view active" id="view-consult">
+    <div class="table-picker" id="table-picker"></div>
+    <div class="table-list" id="table-list"></div>
+  </div>
+
+  <!-- PRACTICE -->
+  <div class="view" id="view-practice">
+    <div id="practice-setup" class="setup">
+      <label>Tables à travailler</label>
+      <div class="range-grid" id="range-grid"></div>
+      <label>Nombre de questions</label>
+      <div class="range-grid" id="count-grid" style="grid-template-columns: repeat(4, 1fr);"></div>
+      <button class="start-btn" id="start-btn">Commencer</button>
+    </div>
+
+    <div id="practice-card" class="card" style="display:none;">
+      <div class="progress" id="progress"></div>
+      <div class="question" id="question"></div>
+      <input type="number" class="answer-input" id="answer-input" inputmode="numeric" autocomplete="off">
+      <div class="feedback" id="feedback"></div>
+      <button class="check-btn" id="check-btn">Valider</button>
+    </div>
+
+    <div id="practice-summary" class="session-summary" style="display:none;"></div>
+  </div>
+</div>
+
+<script>
+  // ---------- Navigation ----------
+  const tabs = document.querySelectorAll('.tab');
+  const views = { consult: document.getElementById('view-consult'), practice: document.getElementById('view-practice') };
+  tabs.forEach(t => t.addEventListener('click', () => {
+    tabs.forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    Object.values(views).forEach(v => v.classList.remove('active'));
+    views[t.dataset.view].classList.add('active');
+  }));
+
+  // ---------- Consultation ----------
+  const picker = document.getElementById('table-picker');
+  const list = document.getElementById('table-list');
+  let currentTable = 7;
+
+  for (let n = 1; n <= 12; n++) {
+    const b = document.createElement('button');
+    b.textContent = n;
+    b.addEventListener('click', () => { currentTable = n; renderPicker(); renderList(); });
+    picker.appendChild(b);
+  }
+
+  function renderPicker() {
+    [...picker.children].forEach((b, i) => b.classList.toggle('active', i + 1 === currentTable));
+  }
+
+  function renderList() {
+    list.innerHTML = '';
+    for (let i = 1; i <= 12; i++) {
+      const row = document.createElement('div');
+      row.className = 'table-row';
+      row.innerHTML = `<span>${currentTable} × ${i}</span><span>${currentTable * i}</span>`;
+      list.appendChild(row);
+    }
+  }
+  renderPicker();
+  renderList();
+
+  // ---------- Practice ----------
+  const rangeGrid = document.getElementById('range-grid');
+  const countGrid = document.getElementById('count-grid');
+  const selectedTables = new Set([1,2,3,4,5,6,7,8,9,10,11,12]);
+  let questionCount = 20;
+
+  for (let n = 1; n <= 12; n++) {
+    const b = document.createElement('button');
+    b.textContent = n;
+    b.classList.add('selected');
+    b.addEventListener('click', () => {
+      if (selectedTables.has(n)) { selectedTables.delete(n); b.classList.remove('selected'); }
+      else { selectedTables.add(n); b.classList.add('selected'); }
+    });
+    rangeGrid.appendChild(b);
+  }
+
+  [10, 20, 30, 50].forEach(c => {
+    const b = document.createElement('button');
+    b.textContent = c;
+    if (c === 20) b.classList.add('selected');
+    b.addEventListener('click', () => {
+      [...countGrid.children].forEach(x => x.classList.remove('selected'));
+      b.classList.add('selected');
+      questionCount = c;
+    });
+    countGrid.appendChild(b);
+  });
+
+  const setupEl = document.getElementById('practice-setup');
+  const cardEl = document.getElementById('practice-card');
+  const summaryEl = document.getElementById('practice-summary');
+  const progressEl = document.getElementById('progress');
+  const questionEl = document.getElementById('question');
+  const inputEl = document.getElementById('answer-input');
+  const feedbackEl = document.getElementById('feedback');
+  const checkBtn = document.getElementById('check-btn');
+
+  let session = [];
+  let sessionIndex = 0;
+  let mistakes = {}; // key "a×b" -> count
+  let answered = false;
+
+  document.getElementById('start-btn').addEventListener('click', startSession);
+
+  function startSession() {
+    const tables = [...selectedTables];
+    if (tables.length === 0) return;
+    session = [];
+    for (let i = 0; i < questionCount; i++) {
+      const a = tables[Math.floor(Math.random() * tables.length)];
+      const b = Math.floor(Math.random() * 12) + 1;
+      session.push({ a, b });
+    }
+    sessionIndex = 0;
+    mistakes = {};
+    setupEl.style.display = 'none';
+    summaryEl.style.display = 'none';
+    cardEl.style.display = 'block';
+    showQuestion();
+  }
+
+  function showQuestion() {
+    answered = false;
+    const q = session[sessionIndex];
+    progressEl.textContent = `Question ${sessionIndex + 1} / ${session.length}`;
+    questionEl.textContent = `${q.a} × ${q.b}`;
+    inputEl.value = '';
+    inputEl.className = 'answer-input';
+    feedbackEl.textContent = '';
+    feedbackEl.className = 'feedback';
+    checkBtn.textContent = 'Valider';
+    inputEl.focus();
+  }
+
+  function checkAnswer() {
+    const q = session[sessionIndex];
+    const correct = q.a * q.b;
+    const given = parseInt(inputEl.value, 10);
+
+    if (given === correct) {
+      inputEl.classList.add('correct');
+      feedbackEl.textContent = 'Correct.';
+      feedbackEl.classList.add('correct');
+    } else {
+      inputEl.classList.add('wrong');
+      feedbackEl.textContent = `Réponse : ${correct}`;
+      feedbackEl.classList.add('wrong');
+      const key = `${q.a} × ${q.b}`;
+      mistakes[key] = (mistakes[key] || 0) + 1;
+    }
+    answered = true;
+    checkBtn.textContent = sessionIndex + 1 < session.length ? 'Suivant' : 'Terminer';
+  }
+
+  checkBtn.addEventListener('click', () => {
+    if (!answered) {
+      checkAnswer();
+    } else {
+      sessionIndex++;
+      if (sessionIndex < session.length) {
+        showQuestion();
+      } else {
+        showSummary();
+      }
+    }
+  });
+
+  inputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      checkBtn.click();
+    }
+  });
+
+  function showSummary() {
+    cardEl.style.display = 'none';
+    summaryEl.style.display = 'block';
+    const total = session.length;
+    const wrongCount = Object.values(mistakes).reduce((a, b) => a + b, 0);
+    const correctCount = total - wrongCount;
+
+    let html = `
+      <div class="big">${correctCount} / ${total}</div>
+      <div style="color: var(--muted); font-size: 14px;">bonnes réponses</div>
+    `;
+
+    const weakKeys = Object.keys(mistakes);
+    if (weakKeys.length > 0) {
+      html += `<div class="weak-list"><h3>À revoir</h3>`;
+      weakKeys.forEach(k => {
+        html += `<div class="weak-item"><span>${k}</span><span>${mistakes[k]} erreur${mistakes[k] > 1 ? 's' : ''}</span></div>`;
+      });
+      html += `</div>`;
+    }
+
+    html += `<button class="restart-btn" id="restart-btn">Nouvelle série</button>`;
+    summaryEl.innerHTML = html;
+    document.getElementById('restart-btn').addEventListener('click', () => {
+      summaryEl.style.display = 'none';
+      setupEl.style.display = 'block';
+    });
+  }
+</script>
+</body>
+</html>
