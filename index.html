@@ -23,6 +23,7 @@
     color: var(--ink);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
   }
 
   .wrap {
@@ -124,6 +125,26 @@
     margin-bottom: 8px;
   }
 
+  .setup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .setup-header label { margin-bottom: 0; }
+
+  .select-all-btn {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0;
+  }
+
   .range-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -148,6 +169,25 @@
     border-color: var(--ink);
   }
 
+  .setup-hint {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin: -12px 0 18px;
+  }
+
+  .setup-hint.warn { color: var(--wrong); }
+
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+    font-size: 13.5px;
+    color: var(--ink);
+  }
+
+  .checkbox-row input { accent-color: var(--accent); }
+
   .start-btn {
     width: 100%;
     padding: 13px 0;
@@ -159,6 +199,12 @@
     font-weight: 600;
     cursor: pointer;
     font-family: inherit;
+  }
+
+  .start-btn:disabled {
+    background: var(--line);
+    color: var(--muted);
+    cursor: not-allowed;
   }
 
   .card {
@@ -266,16 +312,155 @@
     cursor: pointer;
     font-family: inherit;
   }
+
+  /* ---- Carnet view ---- */
+  .fiche {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    background: var(--panel);
+  }
+
+  .fiche-header {
+    width: 100%;
+    text-align: left;
+    padding: 14px 16px;
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .fiche-header .chevron {
+    color: var(--muted);
+    font-size: 13px;
+    transition: transform 0.15s ease;
+    flex-shrink: 0;
+    margin-left: 12px;
+  }
+
+  .fiche.open .chevron {
+    transform: rotate(90deg);
+  }
+
+  .fiche-body {
+    display: none;
+    padding: 0 16px 18px;
+    font-size: 14.5px;
+    background: var(--paper);
+  }
+
+  .fiche.open .fiche-body {
+    display: block;
+  }
+
+  .fiche-body p {
+    margin: 10px 0;
+  }
+
+  .fiche-body strong {
+    color: var(--ink);
+  }
+
+  .principle {
+    background: var(--panel);
+    border-left: 3px solid var(--accent);
+    padding: 8px 12px;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+
+  .warning {
+    background: #f5e9e4;
+    border-left: 3px solid var(--wrong);
+    padding: 8px 12px;
+    margin: 12px 0;
+    font-size: 13.5px;
+    color: #6e2c20;
+  }
+
+  .example {
+    font-variant-numeric: tabular-nums;
+    background: var(--panel);
+    border-radius: 4px;
+    padding: 10px 12px;
+    margin: 10px 0;
+    font-size: 14px;
+  }
+
+  .example .label {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: none;
+    margin-bottom: 4px;
+  }
+
+  .fiche-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .fiche-body th, .fiche-body td {
+    text-align: left;
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .fiche-body th {
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 12.5px;
+  }
+
+  .fiche-body ol, .fiche-body ul {
+    margin: 10px 0;
+    padding-left: 20px;
+  }
+
+  .fiche-body ol li, .fiche-body ul li {
+    margin-bottom: 6px;
+  }
+
+  .free-section textarea {
+    width: 100%;
+    min-height: 120px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--paper);
+    resize: vertical;
+  }
+
+  .free-note {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Tables de multiplication</h1>
-  <p class="sub">Consultation et entraînement, sans détour.</p>
+  <p class="sub">Consultation, entraînement et carnet, sans détour.</p>
 
   <div class="tabs">
     <button class="tab active" data-view="consult">Consulter</button>
     <button class="tab" data-view="practice">S'entraîner</button>
+    <button class="tab" data-view="carnet">Carnet</button>
   </div>
 
   <!-- CONSULTATION -->
@@ -287,11 +472,21 @@
   <!-- PRACTICE -->
   <div class="view" id="view-practice">
     <div id="practice-setup" class="setup">
-      <label>Tables à travailler</label>
+      <div class="setup-header">
+        <label>Tables à travailler</label>
+        <button class="select-all-btn" id="select-all-btn">Tout sélectionner</button>
+      </div>
       <div class="range-grid" id="range-grid"></div>
+      <div class="setup-hint" id="range-hint">Aucune table sélectionnée pour l'instant — clique sur une ou plusieurs tables ci-dessus.</div>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="include-easy">
+        Inclure les × 0 et × 1
+      </label>
+
       <label>Nombre de questions</label>
       <div class="range-grid" id="count-grid" style="grid-template-columns: repeat(4, 1fr);"></div>
-      <button class="start-btn" id="start-btn">Commencer</button>
+      <button class="start-btn" id="start-btn" disabled>Commencer</button>
     </div>
 
     <div id="practice-card" class="card" style="display:none;">
@@ -304,12 +499,167 @@
 
     <div id="practice-summary" class="session-summary" style="display:none;"></div>
   </div>
+
+  <!-- CARNET -->
+  <div class="view" id="view-carnet">
+    <div class="fiche open">
+      <button class="fiche-header">Fiche 1 — Multiplier/diviser par 10, 100, 1000 <span class="chevron">›</span></button>
+      <div class="fiche-body">
+        <div class="principle"><strong>Principe :</strong> on déplace la virgule, on ne recalcule rien.</div>
+        <ul>
+          <li>Multiplier par 10, 100, 1000 → virgule vers la <strong>droite</strong> (1, 2, ou 3 rangs)</li>
+          <li>Diviser par 10, 100, 1000 → virgule vers la <strong>gauche</strong> (1, 2, ou 3 rangs)</li>
+        </ul>
+        <p><strong>Nombre de rangs = nombre de zéros</strong></p>
+        <table>
+          <tr><th>Opération</th><th>Rangs</th><th>Exemple</th></tr>
+          <tr><td>÷ 10</td><td>1</td><td>56 ÷ 10 = 5,6</td></tr>
+          <tr><td>÷ 100</td><td>2</td><td>56 ÷ 100 = 0,56</td></tr>
+          <tr><td>÷ 1000</td><td>3</td><td>56 ÷ 1000 = 0,056</td></tr>
+        </table>
+        <div class="warning">⚠️ Piège vécu : compter le bon nombre de zéros. Vérifier après coup en comptant les rangs un par un plutôt que d'aller trop vite.</div>
+      </div>
+    </div>
+
+    <div class="fiche">
+      <button class="fiche-header">Fiche 2 — Diviser par un nombre décimal <span class="chevron">›</span></button>
+      <div class="fiche-body">
+        <div class="principle"><strong>Principe :</strong> transformer en division entière en multipliant haut et bas par 10 (ou 100).</div>
+        <div class="example">
+          <div class="label">Exemple</div>
+          9000 ÷ 0,9 → (9000 × 10) ÷ (0,9 × 10) = 90 000 ÷ 9 = <strong>10 000</strong>
+        </div>
+        <div class="example">
+          <div class="label">Autre exemple</div>
+          15 ÷ 0,3 → × 10 : 150 ÷ 3 = <strong>50</strong>
+        </div>
+        <div class="warning">
+          ⚠️ Règle importante : le nombre de zéros à multiplier dépend du <strong>nombre de chiffres après la virgule</strong> :
+          <ul>
+            <li>1 chiffre après la virgule (0,3 ; 0,9) → × 10</li>
+            <li>2 chiffres après la virgule (0,25 ; 0,75) → × 100</li>
+          </ul>
+        </div>
+        <div class="warning">
+          Piège vécu : 15 ÷ 0,25 → si on multiplie seulement par 10, on obtient 0,25 × 10 = 2,5 (encore une virgule !). Il faut multiplier par 100 : 15 × 100 = 1500, et 0,25 × 100 = 25. Donc 15 ÷ 0,25 = 1500 ÷ 25 = 60.
+        </div>
+        <p><strong>Raccourcis pratiques à mémoriser</strong> (diviser par un décimal &lt; 1 rend le résultat plus grand) :</p>
+        <ul>
+          <li>Diviser par 0,5 = <strong>multiplier par 2</strong> (5 ÷ 0,5 = 10)</li>
+          <li>Diviser par 0,25 = <strong>multiplier par 4</strong> (5 ÷ 0,25 = 20)</li>
+          <li>Diviser par 0,1 = <strong>multiplier par 10</strong> (5 ÷ 0,1 = 50)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="fiche">
+      <button class="fiche-header">Fiche 3 — Fractions ↔ décimales ↔ pourcentages <span class="chevron">›</span></button>
+      <div class="fiche-body">
+        <table>
+          <tr><th>Fraction</th><th>Décimal</th><th>Pourcentage</th></tr>
+          <tr><td>1/2</td><td>0,5</td><td>50 %</td></tr>
+          <tr><td>1/3</td><td>0,33...</td><td>33 % (arrondi)</td></tr>
+          <tr><td>2/3</td><td>0,66...</td><td>66 % (arrondi)</td></tr>
+          <tr><td>1/4</td><td>0,25</td><td>25 %</td></tr>
+          <tr><td>3/4</td><td>0,75</td><td>75 %</td></tr>
+          <tr><td>1/10</td><td>0,1</td><td>10 %</td></tr>
+        </table>
+        <div class="principle">Astuce division par 3 : préférer la vraie division (30 ÷ 3 = 10) plutôt que multiplier par 0,33 (qui donne un résultat arrondi, donc imprécis).</div>
+      </div>
+    </div>
+
+    <div class="fiche">
+      <button class="fiche-header">Fiche 4 — Multiplier par un décimal type « 0,X » <span class="chevron">›</span></button>
+      <div class="fiche-body">
+        <div class="principle"><strong>Principe :</strong> 0,X × N = (X × N) avec la virgule décalée d'un rang à gauche.</div>
+        <div class="example">
+          <div class="label">Exemple</div>
+          0,3 × 30 → 3 × 30 = 90 → décaler d'un rang → <strong>9</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="fiche">
+      <button class="fiche-header">Fiche 4bis — Multiplier deux décimaux entre eux <span class="chevron">›</span></button>
+      <div class="fiche-body">
+        <div class="principle"><strong>Principe :</strong> on ignore les virgules, on multiplie comme des nombres entiers, puis on replace la virgule à la fin.</div>
+        <ol>
+          <li>Multiplier les deux nombres sans tenir compte des virgules</li>
+          <li>Compter le total de chiffres après la virgule dans les deux nombres de départ</li>
+          <li>Placer la virgule dans le résultat pour avoir ce même total de chiffres après la virgule</li>
+        </ol>
+        <div class="example">
+          <div class="label">Exemple</div>
+          0,4 × 0,8 → sans virgules : 4 × 8 = 32 → 1 + 1 = 2 chiffres après la virgule → <strong>0,32</strong>
+        </div>
+        <div class="example">
+          <div class="label">Autre exemple</div>
+          0,6 × 1,3 → sans virgules : 6 × 13 = 78 → 1 + 1 = 2 chiffres après la virgule → <strong>0,78</strong>
+        </div>
+        <div class="warning">⚠️ Piège vécu : compter le nombre total de chiffres après la virgule dans les deux nombres, pas juste dans un seul.</div>
+      </div>
+    </div>
+
+    <div class="fiche">
+      <button class="fiche-header">Fiche 5 — Poser un problème en équation <span class="chevron">›</span></button>
+      <div class="fiche-body">
+        <ol>
+          <li><strong>Identifier l'inconnue</strong> et lui donner un nom (Y, X...)</li>
+          <li><strong>Traduire chaque phrase de l'énoncé</strong> en expression mathématique, une par une</li>
+          <li><strong>Assembler</strong> les expressions dans une seule équation</li>
+          <li><strong>Factoriser</strong> si l'inconnue apparaît plusieurs fois (mettre en facteur commun)</li>
+          <li><strong>Isoler l'inconnue</strong> en appliquant l'opération inverse des deux côtés</li>
+        </ol>
+        <div class="example">
+          <div class="label">Exemple travaillé (les deux voitures)</div>
+          Inconnue : Y = prix d'achat d'une voiture<br>
+          "vendue à 40% du prix d'achat" → Y × 0,4<br>
+          "vendue à 50% du prix d'achat" → Y × 0,5<br>
+          Équation : 9000 = (Y × 0,4) + (Y × 0,5)<br>
+          Factoriser : 9000 = Y × 0,9<br>
+          Isoler : Y = 9000 ÷ 0,9 = <strong>10 000</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="fiche">
+      <button class="fiche-header">Fiche 6 — Remonter le temps (problèmes en cascade) <span class="chevron">›</span></button>
+      <div class="fiche-body">
+        <p>Pour les problèmes du type « il reste X après avoir gaspillé une fraction », on remonte étape par étape, de la fin vers le début.</p>
+        <div class="principle">
+          <strong>Principe :</strong> si on gaspille une fraction, il reste la fraction complémentaire.
+          <ul>
+            <li>Gaspiller la moitié → il reste l'autre moitié (1/2)</li>
+            <li>Gaspiller le tiers → il reste les deux tiers (2/3)</li>
+          </ul>
+        </div>
+        <p><strong>Méthode :</strong> à chaque étape, calculer combien vaut 1 part de la fraction restante, puis multiplier pour retrouver le total.</p>
+        <div class="example">
+          <div class="label">Exemple</div>
+          Reste 30 € après avoir gaspillé le tiers → 30 € = 2/3 du total → 1/3 = 15 € → total = <strong>45 €</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="fiche">
+      <button class="fiche-header">À ajouter au fil des exercices <span class="chevron">›</span></button>
+      <div class="fiche-body free-section">
+        <p>Section libre pour noter les prochaines techniques rencontrées.</p>
+        <textarea placeholder="Note ici tes prochaines découvertes…"></textarea>
+        <div class="free-note">Cette zone n'est pas sauvegardée automatiquement — pense à copier ton texte ailleurs si tu veux le garder.</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
   // ---------- Navigation ----------
   const tabs = document.querySelectorAll('.tab');
-  const views = { consult: document.getElementById('view-consult'), practice: document.getElementById('view-practice') };
+  const views = {
+    consult: document.getElementById('view-consult'),
+    practice: document.getElementById('view-practice'),
+    carnet: document.getElementById('view-carnet')
+  };
   tabs.forEach(t => t.addEventListener('click', () => {
     tabs.forEach(x => x.classList.remove('active'));
     t.classList.add('active');
@@ -348,19 +698,55 @@
   // ---------- Practice ----------
   const rangeGrid = document.getElementById('range-grid');
   const countGrid = document.getElementById('count-grid');
-  const selectedTables = new Set([1,2,3,4,5,6,7,8,9,10,11,12]);
-  let questionCount = 20;
+  const rangeHint = document.getElementById('range-hint');
+  const startBtn = document.getElementById('start-btn');
+  const selectAllBtn = document.getElementById('select-all-btn');
+  const includeEasyEl = document.getElementById('include-easy');
 
+  // Fix n°1 : aucune table sélectionnée par défaut, pour éviter l'inversion
+  // "cliquer sur une table" = "je veux m'entraîner dessus" doit être sans ambiguïté.
+  const selectedTables = new Set();
+  let questionCount = 20;
+  let allSelected = false;
+
+  const tableButtons = [];
   for (let n = 1; n <= 12; n++) {
     const b = document.createElement('button');
     b.textContent = n;
-    b.classList.add('selected');
     b.addEventListener('click', () => {
       if (selectedTables.has(n)) { selectedTables.delete(n); b.classList.remove('selected'); }
       else { selectedTables.add(n); b.classList.add('selected'); }
+      updateSetupState();
     });
     rangeGrid.appendChild(b);
+    tableButtons.push(b);
   }
+
+  selectAllBtn.addEventListener('click', () => {
+    allSelected = !allSelected;
+    tableButtons.forEach((b, i) => {
+      const n = i + 1;
+      if (allSelected) { selectedTables.add(n); b.classList.add('selected'); }
+      else { selectedTables.delete(n); b.classList.remove('selected'); }
+    });
+    updateSetupState();
+  });
+
+  function updateSetupState() {
+    allSelected = selectedTables.size === 12;
+    selectAllBtn.textContent = allSelected ? 'Tout désélectionner' : 'Tout sélectionner';
+    if (selectedTables.size === 0) {
+      rangeHint.textContent = "Aucune table sélectionnée pour l'instant — clique sur une ou plusieurs tables ci-dessus.";
+      rangeHint.classList.remove('warn');
+      startBtn.disabled = true;
+    } else {
+      const list = [...selectedTables].sort((a, b) => a - b).join(', ');
+      rangeHint.textContent = `Tables sélectionnées : ${list}`;
+      rangeHint.classList.remove('warn');
+      startBtn.disabled = false;
+    }
+  }
+  updateSetupState();
 
   [10, 20, 30, 50].forEach(c => {
     const b = document.createElement('button');
@@ -388,17 +774,49 @@
   let mistakes = {}; // key "a×b" -> count
   let answered = false;
 
-  document.getElementById('start-btn').addEventListener('click', startSession);
+  startBtn.addEventListener('click', startSession);
+
+  // Fix n°2 : on construit d'abord la liste de toutes les combinaisons possibles
+  // (sans doublon), on la mélange, puis on pioche dedans sans remise tant qu'il
+  // en reste — ce qui évite les répétitions et équilibre facile/difficile.
+  // Les × 0 et × 1 sont exclus par défaut (case à cocher pour les inclure).
+  function buildPool(tables, includeEasy) {
+    const pool = [];
+    const multipliers = [];
+    for (let m = 1; m <= 12; m++) {
+      if (!includeEasy && m === 1) continue;
+      multipliers.push(m);
+    }
+    tables.forEach(a => {
+      multipliers.forEach(b => pool.push({ a, b }));
+    });
+    return pool;
+  }
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
 
   function startSession() {
     const tables = [...selectedTables];
     if (tables.length === 0) return;
+
+    const includeEasy = includeEasyEl.checked;
+    let pool = shuffle(buildPool(tables, includeEasy));
+
     session = [];
-    for (let i = 0; i < questionCount; i++) {
-      const a = tables[Math.floor(Math.random() * tables.length)];
-      const b = Math.floor(Math.random() * 12) + 1;
-      session.push({ a, b });
+    // On pioche sans remise ; si la série demandée dépasse le nombre de
+    // combinaisons distinctes disponibles, on remélange un nouveau tour
+    // plutôt que de répéter immédiatement la même question.
+    while (session.length < questionCount) {
+      if (pool.length === 0) pool = shuffle(buildPool(tables, includeEasy));
+      session.push(pool.pop());
     }
+
     sessionIndex = 0;
     mistakes = {};
     setupEl.style.display = 'none';
@@ -488,6 +906,13 @@
       setupEl.style.display = 'block';
     });
   }
+
+  // ---------- Carnet ----------
+  document.querySelectorAll('#view-carnet .fiche-header').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.parentElement.classList.toggle('open');
+    });
+  });
 </script>
 </body>
 </html>
